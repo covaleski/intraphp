@@ -26,18 +26,17 @@ if ($bootstrap !== null) {
 // Set executables.
 $chromium = Environment::getValue('CHROMIUM_EXECUTABLE') ?? 'chromium';
 $php = Environment::getValue('PHP_EXECUTABLE') ?? 'php';
-$which = System::isWindows() ? 'where' : 'which';
 
 // Check executables.
-if (empty(shell_exec("{$which} {$chromium}"))) {
+if (empty(System::findExecutable($chromium))) {
     throw new \RuntimeException('Failed to find the Chromium executable.');
 }
-if (empty(shell_exec("{$which} {$php}"))) {
+if (empty(System::findExecutable($php))) {
     throw new \RuntimeException('Failed to find the PHP executable.');
 }
 
 // Set application variables.
-$docroot = Environment::getValue('APP_DOCROOT') ?? getcwd();
+$docroot = Environment::getValue('APP_DOCROOT') ?? $directory;
 $homepage = Environment::getValue('APP_HOMEPAGE') ?? '/';
 $host = Environment::getValue('APP_SERVER_HOST') ?? 'localhost';
 $port = Environment::getValue('APP_SERVER_PORT') ?? '8888';

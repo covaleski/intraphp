@@ -8,6 +8,15 @@ namespace Covaleski\IntraPhp\Helpers;
 class System
 {
     /**
+     * Resolve an executable name to its disk location.
+     */
+    public static function findExecutable(string $name): string
+    {
+        $which = System::isWindows() ? 'where' : 'which';
+        return trim((string) shell_exec("{$which} {$name}"));
+    }
+
+    /**
      * Get the current working directory.
      */
     public static function getCwd(): string
