@@ -1,0 +1,72 @@
+#!/usr/bin/php
+<?php
+
+use Covaleski\IntraPhp\Helpers\Environment;
+use Covaleski\IntraPhp\Helpers\System;
+use Symfony\Component\Process\Process;
+
+// Get the autoloader.
+require $_composer_autoload_path ?? __DIR__ . '/../vendor/autoload.php';
+
+// Get working directory.
+$directory = System::getCwd();
+
+// Load user bootstrap file.
+$bootstrap = Environment::getValue('APP_BOOTSTRAP');
+if ($bootstrap !== null) {
+    if (!file_exists($bootstrap)) {
+        $message = 'Custom bootstrap file "%s" does not exist.';
+        throw new \RuntimeException(sprintf($message, $bootstrap));
+    }
+    require_once $bootstrap;
+} elseif (file_exists($directory . '/bootstrap.php')) {
+    require_once $directory . '/bootstrap.php';
+}
+
+// Set executables.
+$chromium = Environment::getValue('CHROMIUM_EXECUTABLE') ?? 'chromium';
+$php = Environment::getValue('PHP_EXECUTABLE') ?? 'php';
+$which = System::isWindows() ? 'where' : 'which';
+
+// Check executables.
+if (empty(shell_exec("{$which} {$chromium}"))) {
+    throw new \RuntimeException('Failed to find the Chromium executable.');
+}
+if (empty(shell_exec("{$which} {$php}"))) {
+    throw new \RuntimeException('Failed to find the PHP executable.');
+}
+
+// Set application variables.
+$docroot = Environment::getValue('APP_DOCROOT') ?? getcwd();
+$homepage = Environment::getValue('APP_HOMEPAGE') ?? '/';
+$host = Environment::getValue('APP_SERVER_HOST') ?? 'localhost';
+$port = Environment::getValue('APP_SERVER_PORT') ?? '8888';
+$protocol = Environment::getValue('APP_SERVER_PROTOCOL') ?? 'http';
+
+// Check docroot.
+if ($docroot === false) {
+    $message = 'Failed to use the current working directory as docroot.';
+    throw new \RuntimeException($message);
+}
+
+// Get environment to pass.
+$environment = Environment::getValues();
+
+// Prepare PHP server.
+$address = $host . ':' . $port;
+$command = [$php, '-S', $address, '-t', $docroot];
+$server = new Process($command, env: $environment, timeout: null);
+
+// Prepare Chromium client.
+$url = $protocol . '://' . $address . $homepage;
+$command = [$chromium, "--app={$url}"];
+$client = new Process($command, env: $environment, timeout: null);
+
+// Run server and client.
+try {
+    $server->start();
+    $client->run();
+} finally {
+    $client->stop();
+    $server->stop();
+}
