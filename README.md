@@ -16,6 +16,16 @@ composer require covaleski/intraphp
 
 ## Usage
 
+### Check requirements
+
+You must have Chromium and PHP installed in your system. Check platform requirements using:
+
+```shell
+./vendor/bin/intraphp-reqs
+```
+
+If something is flagged as "not found", install it, add a installed package to your PATH or change the library executable using [environment variables](#environment).
+
 ### Simplest setup
 
 Just add your `index.php` file to your project root directory and run the command:
@@ -44,6 +54,14 @@ Run the `intraphp` command to start your application.
 
 ```shell
 ./vendor/bin/intraphp
+```
+
+### Test configuration
+
+To see the result of your configuration without running your application, use:
+
+```shell
+./vendor/bin/intraphp-vars
 ```
 
 ## Environment
