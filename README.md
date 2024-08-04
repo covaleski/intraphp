@@ -2,7 +2,9 @@
 
 Experimental PHP desktop emulation library.
 
-For now, this is a simple library to run local PHP projects like desktop apps using Chromium. Use it for development purposes only and read [Security](#security). Plans are to improve performance and security in the future.
+For now, this is a simple library that runs local PHP projects like desktop apps. It uses Chromium and aims to produce results similar to what Electron does with JavaScript.
+
+Use it for development purposes only and read [Security](#security). Plans are to improve performance and security in the future.
 
 ## Installation
 
@@ -48,10 +50,11 @@ The library uses the following environment variables to setup the application:
 
 This library is a simple experiment and has critical security weaknesses for now:
 
-- The PHP built-in server is used - it is not suited for production;
+- PHP's built-in server is used - [it is not suited for production](https://www.php.net/manual/en/features.commandline.webserver.php);
 - The host - `localhost` - is accessible by any application in your computer;
 - No encryption is used and the default protocol is `http:`, not `https:`;
 - No INI directives are set;
+- No additional flags are set to Chromium;
 - Your home is accessible by the application as it is not sandboxed.
 
 There are plans to make it suitable for production by replacing `localhost` by Unix domain sockets, using file permissions and encryption for protection, setting INI directives and other measures.
