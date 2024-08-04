@@ -1,0 +1,28 @@
+#!/usr/bin/php
+<?php
+
+use Covaleski\IntraPhp\Helpers\Environment;
+use Covaleski\IntraPhp\Helpers\System;
+
+// Get the autoloader.
+require $_composer_autoload_path ?? __DIR__ . '/../vendor/autoload.php';
+
+// Set executables.
+$chromium = Environment::getValue('CHROMIUM_EXECUTABLE') ?? 'chromium';
+$php = Environment::getValue('PHP_EXECUTABLE') ?? 'php';
+
+// Check Chromium.
+$which_chromium = System::findExecutable($chromium);
+if (empty($which_chromium)) {
+    echo "Chromium: \e[0;31m'{$chromium}' not found\e[0m" . PHP_EOL;
+} else {
+    echo "Chromium: \e[0;32m{$which_chromium}\e[0m" . PHP_EOL;
+}
+
+// Check PHP.
+$which_php = System::findExecutable($php);
+if (empty($which_php)) {
+    echo "PHP: \e[0;31m'{$php}' not found\e[0m" . PHP_EOL;
+} else {
+    echo "PHP: \e[0;32m{$which_php}\e[0m" . PHP_EOL;
+}

@@ -2,7 +2,11 @@
     "name": "covaleski/intraphp",
     "description": "Experimental PHP desktop emulation library.",
     "type": "library",
-    "bin": ["bin/intraphp"],
+    "bin": [
+        "bin/intraphp",
+        "bin/intraphp-reqs",
+        "bin/intraphp-vars"
+    ],
     "require": {
         "symfony/process": "^7.1"
     },

@@ -1,0 +1,42 @@
+#!/usr/bin/php
+<?php
+
+use Covaleski\IntraPhp\Helpers\Environment;
+use Covaleski\IntraPhp\Helpers\System;
+
+// Get the autoloader.
+require $_composer_autoload_path ?? __DIR__ . '/../vendor/autoload.php';
+
+// Get working directory.
+$directory = System::getCwd();
+
+// Load user bootstrap file.
+$bootstrap = Environment::getValue('APP_BOOTSTRAP');
+if ($bootstrap !== null) {
+    if (!file_exists($bootstrap)) {
+        $message = 'Custom bootstrap file "%s" does not exist.';
+        throw new \RuntimeException(sprintf($message, $bootstrap));
+    }
+    require_once $bootstrap;
+} elseif (file_exists($directory . '/bootstrap.php')) {
+    require_once $directory . '/bootstrap.php';
+}
+
+// Set values.
+$homepage = Environment::getValue('APP_HOMEPAGE') ?? '/';
+$host = Environment::getValue('APP_SERVER_HOST') ?? 'localhost';
+$port = Environment::getValue('APP_SERVER_PORT') ?? '8888';
+$protocol = Environment::getValue('APP_SERVER_PROTOCOL') ?? 'http';
+$address = $host . ':' . $port;
+$settings = [
+    'Chromium' => Environment::getValue('CHROMIUM_EXECUTABLE') ?? 'chromium',
+    'Client URL' => $protocol . '://' . $address . $homepage,
+    'Docroot' => Environment::getValue('APP_DOCROOT') ?? $directory,
+    'PHP' => Environment::getValue('PHP_EXECUTABLE') ?? 'php',
+    'Server address' => $address,
+];
+
+// Show.
+foreach ($settings as $name => $value) {
+    echo "\e[0;33m{$name}\e[0m: {$value}" . PHP_EOL;
+}
